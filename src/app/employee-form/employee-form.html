@@ -1,0 +1,36 @@
+<h2>Submit Shift Request</h2>
+<div>
+  <label>
+    Name:
+<input
+  formControlName="employeeName"
+/>
+  </label>
+</div>
+
+<div>
+  <label>
+    
+    Days (select one or more):
+
+  </label>
+  <div *ngFor="let d of days">
+    <label>
+      <input type="checkbox" [checked]="form.value.requestedDays?.includes(d)" (change)="toggleDay(d)"/> {{d}}
+    </label>
+  </div>
+</div>
+
+<div>
+  <label>Shift:
+  <select formControlName="shift">
+  <option *ngFor="let s of shifts" [value]="s.value">{{ s.label }}</option>
+</select>
+
+  </label>
+</div>
+
+<button (click)="submit()">Submit</button>
+<div *ngIf="message" style="margin-top:10px">{{message}}</div>
+
+<p><a routerLink="/admin">Go to Admin</a></p>

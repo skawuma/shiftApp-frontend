@@ -1,0 +1,26 @@
+<h2>Admin - Requests</h2>
+<div *ngIf="message">{{message}}</div>
+<table border="1" cellpadding="6">
+  <thead>
+    <tr>
+      <th>ID</th><th>Name</th><th>Days</th><th>Shift</th><th>Status</th><th>Admin Comment</th><th>Actions</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let r of requests">
+      <td>{{r.id}}</td>
+      <td>{{r.employeeName}}</td>
+      <td>{{r.requestedDays?.join(', ')}}</td>
+      <td>{{r.shift}}</td>
+      <td>{{r.status}}</td>
+      <td>{{r.adminComment}}</td>
+      <td>
+        <button (click)="setStatus(r,'APPROVED')" [disabled]="r.status==='APPROVED'">Approve</button>
+        <button (click)="setStatus(r,'REJECTED')" [disabled]="r.status==='REJECTED'">Reject</button>
+      </td>
+    </tr>
+  </tbody>
+</table>
+
+<p><a routerLink="/">Go to Employee Form</a></p>
+<p>admin-list works!</p>
