@@ -9,27 +9,9 @@ import { RequestService } from '../servicves/request.service';
   styleUrl: './admin-list.css'
 })
 export class AdminList implements OnInit {
-requests: EmployeeRequest[] = [];
-  message = '';
-
-  constructor(private svc: RequestService) {}
-
-  ngOnInit() { this.load(); }
-
-  load() {
-    this.svc.getAll().subscribe(list => this.requests = list, err => this.message = 'Load error');
+  ngOnInit(): void {
+    throw new Error('Method not implemented.');
   }
 
-  setStatus(r: EmployeeRequest, status: 'APPROVED'|'REJECTED') {
-    if (!r.id) return;
-    const comment = prompt('Optional admin comment', r.adminComment || '') || '';
-    this.svc.updateStatus(r.id, status, comment).subscribe({
-      next: updated => {
-        this.message = `Request ${updated.id} ${updated.status}`;
-        this.load();
-      },
-      error: e => this.message = 'Update error'
-    });
-  }
   
 }

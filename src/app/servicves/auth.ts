@@ -2,42 +2,55 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { environment } from '../environments/environment';
+import { Observable, tap } from 'rxjs';
+
+export interface LoginResponse {
+  token: string;
+  role: string;
+  userId?: number;
+  email?: string;
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class Auth {
 
-    private tokenKey = 'shift-app-token';
+  private base = `${environment.apiUrl}/auth`;
+  private tokenKey = 'shift-app-token';
   private roleKey = 'shift-app-role';
+  private userIdKey = 'shift-app-userId';
+  private emailKey = 'shift-app-email';
 
-  constructor(private http: HttpClient, private router: Router) {}
+  constructor(private http: HttpClient) {}
 
-  login(credentials: { username: string, password: string }) {
-    return this.http.post<any>(`${environment.apiUrl}/auth/login`, credentials)
-      .subscribe(res => {
-        localStorage.setItem(this.tokenKey, res.token);
-        localStorage.setItem(this.roleKey, res.role);
-        this.router.navigate([res.role === 'ADMIN' ? '/admin' : '/dashboard']);
-      });
+  // returns observable so caller can subscribe and react
+  login(credentials: { username: string; password: string }): Observable<LoginResponse> {
+    return this.http.post<LoginResponse>(`${this.base}/login`, credentials).pipe(
+      tap(res => {
+        if (res?.token) {
+          localStorage.setItem(this.tokenKey, res.token);
+          localStorage.setItem(this.roleKey, res.role ?? '');
+          if (res.userId !== undefined) localStorage.setItem(this.userIdKey, String(res.userId));
+          if (res.email) localStorage.setItem(this.emailKey, res.email);
+        }
+      })
+    );
   }
 
-  logout() {
+  logout(): void {
     localStorage.removeItem(this.tokenKey);
     localStorage.removeItem(this.roleKey);
-    this.router.navigate(['/login']);
+    localStorage.removeItem(this.userIdKey);
+    localStorage.removeItem(this.emailKey);
   }
 
-  getToken(): string | null {
-    return localStorage.getItem(this.tokenKey);
+  getToken(): string | null { return localStorage.getItem(this.tokenKey); }
+  getRole(): string | null { return localStorage.getItem(this.roleKey); }
+  getUserId(): number | null {
+    const v = localStorage.getItem(this.userIdKey);
+    return v ? Number(v) : null;
   }
 
-  getRole(): string | null {
-    return localStorage.getItem(this.roleKey);
-  }
-
-  isLoggedIn(): boolean {
-    return !!this.getToken();
-  }
-  
+  isLoggedIn(): boolean { return !!this.getToken(); }
 }
