@@ -9,13 +9,13 @@ import { environment } from '../environments/environment';
 })
 export class RequestService {
 
- private apiUrl = 'http://localhost:8080/api/requests';
+ private apiUrl = environment.apiUrl + '/requests';
 
   constructor(private http: HttpClient) {}
 
   // 🔐 Helper: attach JWT token from localStorage
   private getAuthHeaders(): HttpHeaders {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('shift-app-token');
     return new HttpHeaders({
       Authorization: token ? `Bearer ${token}` : ''
     });
@@ -24,13 +24,16 @@ export class RequestService {
   // 🧾 Submit new shift request (employee)
 submitRequest(data: any): Observable<any> {
   const userId = Number(localStorage.getItem('shift-app-userId'));
-  return this.http.post(`${this.apiUrl}/requests`, { ...data, userId }, { headers: this.getAuthHeaders() });
+  console.log(userId);  
+  console.log(data);
+  console.log(localStorage);
+  return this.http.post(`${this.apiUrl}`, { ...data, userId }, { headers: this.getAuthHeaders() });
 }
 
   // 👤 Get requests for the logged-in user
 getRequestsByUser(): Observable<any> {
   const userId = Number(localStorage.getItem('shift-app-userId'));
-  return this.http.get(`${this.apiUrl}/requests/user`, {
+  return this.http.get(`${this.apiUrl}/user`, {
     headers: this.getAuthHeaders(),
     params: new HttpParams().set('userId', String(userId)),
   });
@@ -65,4 +68,3 @@ getRequestsByUser(): Observable<any> {
     );
   }
 }
-

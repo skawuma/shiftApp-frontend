@@ -19,7 +19,7 @@ export const authInterceptor: HttpInterceptorFn = (
   req: HttpRequest<any>,
   next: HttpHandlerFn
 ): Observable<HttpEvent<any>> => {
-  const token = localStorage.getItem('token');
+  const token = localStorage.getItem('shift-app-token');
   const snackbar = inject(MatSnackBar);
   const router = inject(Router);
 
@@ -38,7 +38,7 @@ export const authInterceptor: HttpInterceptorFn = (
         snackbar.open('Session expired or unauthorized. Please log in again.', 'OK', {
           duration: 4000
         });
-        localStorage.removeItem('token');
+        localStorage.removeItem('shift-app-token');
         router.navigate(['/login']);
       }
       return throwError(() => error);

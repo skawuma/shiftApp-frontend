@@ -26,7 +26,7 @@ import { Auth } from '../servicves/auth';
   template: `
     <div class="login-wrapper">
       <mat-card class="login-card">
-        <h2>Sign in</h2>
+        <h2>Login</h2>
 
         <form [formGroup]="form" (ngSubmit)="onSubmit()" class="login-form">
           <mat-form-field appearance="fill" class="full">
@@ -97,10 +97,11 @@ export class LoginComponent  implements OnInit{
       next: (res) => {
         this.loading = false;
         this.snack.open('Login successful', 'OK', { duration: 2000 });
-
+          console.log(res);
         // redirect by role
         const role = res.role ?? this.auth.getRole();
-        if (role === 'ADMIN') this.router.navigate(['/admin']);
+        if (role === 'ROLE_ADMIN') this.router.navigate(['/admin']);
+        
         else this.router.navigate(['/dashboard']);
       },
       error: (err) => {
@@ -108,6 +109,8 @@ export class LoginComponent  implements OnInit{
         const msg = err?.error?.message || err?.message || 'Login failed';
         this.snack.open(msg, 'Close', { duration: 4000 });
       }
+    
     });
+
   }
 }

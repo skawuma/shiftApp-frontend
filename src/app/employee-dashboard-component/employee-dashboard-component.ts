@@ -157,9 +157,11 @@ this.shiftForm = this.fb.group({
       next: (res: any) => {
         this.requests = res;
         this.loading = false;
+         
       },
       error: () => (this.loading = false)
     });
+    
   }
 
   submitRequest() {

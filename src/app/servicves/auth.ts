@@ -22,7 +22,7 @@ export class Auth {
   private userIdKey = 'shift-app-userId';
   private emailKey = 'shift-app-email';
 
-  constructor(private http: HttpClient) {}
+  constructor(private http: HttpClient,private router: Router) {}
 
   // returns observable so caller can subscribe and react
   login(credentials: { username: string; password: string }): Observable<LoginResponse> {
@@ -43,6 +43,7 @@ export class Auth {
     localStorage.removeItem(this.roleKey);
     localStorage.removeItem(this.userIdKey);
     localStorage.removeItem(this.emailKey);
+    this.router.navigate(['/login']);
   }
 
   getToken(): string | null { return localStorage.getItem(this.tokenKey); }
@@ -52,5 +53,11 @@ export class Auth {
     return v ? Number(v) : null;
   }
 
-  isLoggedIn(): boolean { return !!this.getToken(); }
+  isLoggedIn(): boolean { return !!this.getToken();
+
+   }
+
+   register(data: { username: string; email: string; password: string }) {
+  return this.http.post(`${this.base}/register`, data);
+   }
 }

@@ -78,7 +78,7 @@
               }
             ],
             "styles": [
-              "src/styles.css"
+              "src/custom-theme.scss"
             ]
           }
         }

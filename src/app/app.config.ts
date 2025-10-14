@@ -8,6 +8,7 @@ import { BrowserModule, bootstrapApplication } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { routes } from './app.routes';
 import { authInterceptor } from './auth-interceptor';
+import { CommonModule } from '@angular/common';
 
 
 
@@ -15,6 +16,8 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideRouter(routes),
  provideHttpClient(withInterceptors([authInterceptor])),
-      provideAnimations()
+      provideAnimations(),
+      importProvidersFrom(CommonModule) 
+
   ]
 };

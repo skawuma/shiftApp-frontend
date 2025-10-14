@@ -3,11 +3,12 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterModule } from '@angular/router';
 import { Auth } from './servicves/auth';
+import { NgIf } from '@angular/common';
 
 
 @Component({
   selector: 'app-root',
-  imports: [RouterModule,MatToolbarModule,MatButtonModule],
+  imports: [NgIf,RouterModule,MatToolbarModule,MatButtonModule],
   template: `
     <mat-toolbar color="primary">
       <span>Shift Request App</span>
