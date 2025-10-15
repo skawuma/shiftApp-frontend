@@ -4,6 +4,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { RouterModule } from '@angular/router';
 import { Auth } from './servicves/auth';
 import { NgIf } from '@angular/common';
+import { EmployeeDashboardComponent } from './employee-dashboard-component/employee-dashboard-component';
 
 
 @Component({

@@ -5,6 +5,8 @@
 /tmp
 /out-tsc
 /bazel-out
+# Ignore Angular environment folder
+ src/environments/
 
 # Node
 /node_modules

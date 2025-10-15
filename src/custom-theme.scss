@@ -51,3 +51,12 @@ body {
   @include mat.all-component-themes($dark-theme);
   color-scheme: dark;
 }
+.snack-approve {
+  background-color: #2e7d32 !important; /* green */
+  color: white !important;
+}
+
+.snack-reject {
+  background-color: #c62828 !important; /* red */
+  color: white !important;
+}
