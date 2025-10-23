@@ -1,74 +1,70 @@
-# Copilot Instructions for AI Agents
+## What this repo is
 
-## Project Overview
-- **Framework:** Angular (with Vite for dev server)
-- **Purpose:** Shift request management for employees and admins
-- **Key Domains:** Authentication, shift requests, admin approval, user dashboards
+ShiftApp-frontend is an Angular 20 single-page application (no Angular CLI workspace subprojects). It uses standalone components (bootstrapApplication in `src/main.ts`) and Angular Material. The front-end talks to a backend REST API configured in `src/app/environments/environment.ts` (`environment.apiUrl`).
 
-## Architecture & Patterns
-- **Component Structure:**
-  - `src/app/` contains feature folders (e.g., `admin-dashboard-component`, `employee-dashboard-component`, `login-component`, `register-component`)
-  - Shared UI in `src/app/shared/`
-  - Services in `src/app/servicves/` (note typo: "servicves" not "services")
-  - Data models in `src/app/models/models.ts`
-- **Routing:**
-  - Defined in `app.routes.ts` with role-based guards (`authGuard`)
-  - Main entry: `<app-root>` in `index.html`, renders `AppComponent` with Angular Material toolbar and router outlet
-- **State & Auth:**
-  - Auth state (JWT, role, userId, username) stored in `localStorage` with keys like `shift-app-token`
-  - Auth logic in `servicves/auth.ts` (login, logout, register, token/role helpers)
-- **API Integration:**
-  - Backend API base URL from `environments/environment.ts` (`apiUrl`)
-  - All requests use JWT from localStorage in `Authorization` header
-  - Shift request logic in `servicves/request.service.ts` (submit, fetch, approve, reject)
+## High-level architecture
 
-## Developer Workflows
-- **Start Dev Server:**
-  - `ng serve` (Angular CLI, default port 4200)
-  - Or use Vite: `vite` (configured in `vite.config.js`)
-- **Build:**
-  - `ng build`
-- **Unit Tests:**
-  - `ng test` (Karma)
-- **E2E Tests:**
-  - `ng e2e` (framework not included by default)
+- Entry: `src/main.ts` uses bootstrapApplication(AppComponent, appConfig) — the app uses Angular's standalone components (no NgModule files).
+- Root component: `src/app/app.ts` (selector `app-root`) provides the top toolbar and invokes `router-outlet` for navigation.
+- Routing: `src/app/app.routes.ts` declares routes and uses `authGuard` for protected routes. Role-based route data is attached (example: `{ role: 'ROLE_ADMIN' }`).
+- Services: look under `src/app/servicves/` (typo kept from project) for `auth.ts` and `request.service.ts` — these implement authentication and HTTP calls respectively.
+- Components: major pages are in `admin-dashboard-component/`, `employee-dashboard-component/`, `login-component/`, and `register-component/`.
 
-## Project Conventions
-- **Component Naming:**
-  - Folders and files use kebab-case, but some have inconsistent naming (e.g., `admin-dashboard-component`)
-- **Service Directory:**
-  - Services are under `servicves/` (typo is intentional in codebase)
-- **Material UI:**
-  - Uses Angular Material (see `MatToolbarModule`, `MatButtonModule` in `app.ts`)
-- **Role-based Routing:**
-  - Route `data` property specifies required role; enforced by `authGuard`
-- **Environment Config:**
-  - API URL is set in `src/app/environments/environment.ts` (dev/prod switching is manual)
+## Key files to reference
 
-## Integration Points
-- **Backend:**
-  - Expects REST API at `apiUrl` (see environment config)
-  - Auth endpoints: `/auth/login`, `/auth/register`
-  - Shift request endpoints: `/requests`, `/requests/admin`, `/requests/{id}/approve|reject`
+- `src/main.ts` — app bootstrap (standalone components)
+- `src/app/app.ts` — root component, uses `Auth` service and Material toolbar
+- `src/app/app.routes.ts` — route definitions and authGuard usage
+- `src/app/environments/environment.ts` — API base URL and production flag
+- `package.json` — build/test scripts (use `npm run start` / `ng serve`)
 
-## Examples
-- **Add a new feature:**
-  - Generate with Angular CLI: `ng generate component feature-name`
-  - Register route in `app.routes.ts`
-- **Access user info:**
-  - Use `Auth` service methods: `getToken()`, `getRole()`, `getUsername()`, `getUserId()`
-- **Submit a shift request:**
-  - Use `RequestService.submitRequest()` with `{ requestedDates, shift }`
+## Build, run, test quickly
 
-## Key Files
-- `src/app/app.ts` (root component)
-- `src/app/app.routes.ts` (routing)
-- `src/app/servicves/auth.ts` (auth logic)
-- `src/app/servicves/request.service.ts` (shift request logic)
-- `src/app/models/models.ts` (data types)
-- `vite.config.js` (Vite dev server config)
-- `README.md` (basic CLI usage)
+- Start dev server: `npm start` (runs `ng serve`) — default host `localhost:4200`.
+- Build production: `npm run build` (runs `ng build`) — outputs to `dist/`.
+- Watch rebuilds: `npm run watch`.
+- Unit tests: `npm test` (Karma + Jasmine) — see `package.json`.
+
+If you need to run `ng` directly, project uses Angular CLI v20; prefer the npm scripts so local CLI version is used.
+
+## Project-specific conventions and gotchas
+
+- Standalone components: The project uses bootstrapApplication and component-level `imports` (standalone mode) instead of NgModules. See `AppComponent` in `src/app/app.ts` for the pattern.
+- Service folder name typo: `src/app/servicves/` — reference services there (don't create `services/` duplicates).
+- Role-based auth: Routes include `data: { role: 'ROLE_*' }`; `authGuard` enforces these. When adding routes follow this pattern.
+- Environment API URL: `environment.apiUrl` (production is true by default in the file). Developers often uncomment local URLs for dev; keep `.env` or per-environment files consistent when adding CI.
+- Material theming: app imports Material modules in component `imports`. Keep styles in `src/custom-theme.scss` and `src/styles.css`.
+
+## Integration points
+
+- REST API: All HTTP requests should use `environment.apiUrl` as the base. Search for usages in `request.service.ts`.
+- Authentication: `src/app/servicves/auth.ts` handles login/logout and session state; many components inject `Auth` directly (see `AppComponent` constructor).
+
+## Small examples and patterns
+
+- Add a protected route with role check:
+
+	- In `app.routes.ts` add: { path: 'admin', component: AdminDashboardComponent, canActivate: [authGuard], data: { role: 'ROLE_ADMIN' } }
+
+- Use the API base URL in a service:
+
+	- const url = `${environment.apiUrl}/shifts` (services import `environment` from `src/app/environments/environment`)
+
+- Use standalone imports inside a component decorator (see `AppComponent` in `src/app/app.ts`):
+
+	- imports: [NgIf, RouterModule, MatToolbarModule, MatButtonModule, RouterOutlet]
+
+## Editing and PR guidance for AI agents
+
+- Keep changes minimal and follow existing naming and folder conventions (note the `servicves` folder name).
+- When adding new components prefer standalone components and include required Material/common imports in the `imports` array.
+- Update `app.routes.ts` for navigation and preserve `authGuard` usage for protected routes. Add `data.role` when route is role-specific.
+- Don't change `environment.ts` production flag unless adding a new environment file; prefer creating `environment.dev.ts` + angular build configurations if needed.
+
+## Tests and quick checks
+
+- After code changes run `npm test` and `npm run build` to catch type or template errors. Angular compiler errors are common if imports are missing in standalone components.
 
 ---
 
-**If any conventions or workflows are unclear, please ask for clarification or check for updates in this file.**
+If any of these points are incomplete or you'd like the agent to follow stricter rules (commit message style, PR branch name format, or additional local scripts), tell me and I will update this file.  
