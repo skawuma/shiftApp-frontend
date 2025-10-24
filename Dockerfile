@@ -27,7 +27,8 @@ RUN npm run build -- --configuration production
 FROM nginx:1.27-alpine
 
 # Copy built Angular dist to Nginx web root
-COPY --from=build /app/dist/ /usr/share/nginx/html/
+COPY --from=build /app/dist/shiftApp-frontend/ /usr/share/nginx/html/
+
 
 # Copy custom Nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
