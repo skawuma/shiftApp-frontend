@@ -19,13 +19,16 @@ RUN npm run build
 # ====== Stage 2: Serve with Nginx ======
 FROM nginx:1.27-alpine
 
-# Copy compiled Vite dist output
-COPY --from=build /app/dist/ /usr/share/nginx/html/
+# Remove default nginx welcome page (important!)
+RUN rm -f /usr/share/nginx/html/index.html
 
-# Copy your custom nginx config
+# Copy built Angular app (correct folder)
+COPY --from=build /app/dist/shiftApp-frontend/ /usr/share/nginx/html/
+
+# Copy custom Nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Create folder for Certbot challenges (HTTPS validation)
+# ACME challenge directory for SSL renewals
 RUN mkdir -p /var/www/certbot
 
 EXPOSE 80 443
