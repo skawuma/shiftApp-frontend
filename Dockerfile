@@ -1,28 +1,38 @@
-# ====== Build Angular ======
+# ====== Stage 1: Build Angular ======
 FROM node:20 AS build
 WORKDIR /app
+
+# Copy dependency manifests and install cleanly
 COPY package*.json ./
 RUN npm ci
+
+# Copy app source code
 COPY . .
 
-# Optionally set API URL based on DOMAIN build-arg (best-effort for common path)
-ARG DOMAIN
-# Try environment.prod in common locations; ignore errors if not present
-RUN (test -f src/environments/environment.prod.ts && sed -i "s#apiUrl: 'http://.*:8080/api'#apiUrl: 'https://${DOMAIN}/api'#" src/environments/environment.prod.ts) || true
-RUN (test -f src/app/environments/environment.prod.ts && sed -i "s#apiUrl: 'http://.*:8080/api'#apiUrl: 'https://${DOMAIN}/api'#" src/app/environments/environment.prod.ts) || true
+# Pass your production domain at build time
+ARG DOMAIN=https://schedule.samuelkawuma.com
 
+# Update environment.prod.ts to point to your live backend API
+# Works whether the file is under src/ or src/app/environments/
+RUN echo "🔧 Setting API domain to ${DOMAIN}" && \
+    (test -f src/environments/environment.prod.ts && \
+     sed -i "s#apiUrl: 'http://.*:8080/api'#apiUrl: '${DOMAIN}/api'#" src/environments/environment.prod.ts) || \
+    (test -f src/app/environments/environment.prod.ts && \
+     sed -i "s#apiUrl: 'http://.*:8080/api'#apiUrl: '${DOMAIN}/api'#" src/app/environments/environment.prod.ts) || true
+
+# Build Angular app for production (no cache)
 RUN npm run build -- --configuration production
 
-# ====== Serve with Nginx ======
+# ====== Stage 2: Serve with Nginx ======
 FROM nginx:1.27-alpine
 
-# Copy SPA build (support both Angular build output styles)
+# Copy built Angular dist to Nginx web root
 COPY --from=build /app/dist/ /usr/share/nginx/html/
 
-# Nginx config for SPA + reverse proxy to backend
+# Copy custom Nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# ACME webroot for certbot challenges
+# Create ACME folder for certbot challenge
 RUN mkdir -p /var/www/certbot
 
 EXPOSE 80 443
