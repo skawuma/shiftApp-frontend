@@ -56,7 +56,6 @@ logout(): void {
     this.snack.open(`Logout cancelled. You're still logged in, ${'shift-app-username'}.`, 'OK', { duration: 3000 });
     return;
   }
-
   // Proceed with logout
   localStorage.removeItem(this.tokenKey);
   localStorage.removeItem(this.roleKey);
@@ -67,7 +66,6 @@ logout(): void {
   this.snack.open(`✅ Logged out successfully. Goodbye, ${'shift-app-usernam'}!`, 'OK', { duration: 3000 });
   this.router.navigate(['/login']);
 }
-
   getToken(): string | null { return localStorage.getItem(this.tokenKey); }
   getRole(): string | null { return localStorage.getItem(this.roleKey); }
   getUsername(): string | null { return localStorage.getItem('shift-app-username'); }
