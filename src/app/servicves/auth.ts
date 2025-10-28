@@ -49,11 +49,11 @@ export class Auth  {
     );
   }
 logout(): void {
-  const confirmed = confirm(`Are you sure you want to log out, ${'shift-app-usernam'}?`);
+  const confirmed = confirm(`Are you sure you want to log out, ${this.getUsername()}?`);
 
   if (!confirmed) {
     // Cancel pressed → stay logged in
-    this.snack.open(`Logout cancelled. You're still logged in, ${'shift-app-username'}.`, 'OK', { duration: 3000 });
+    this.snack.open(`Logout cancelled. You're still logged in, ${this.getUsername()}.`, 'OK', { duration: 3000 });
     return;
   }
   // Proceed with logout
@@ -63,7 +63,7 @@ logout(): void {
   localStorage.removeItem(this.emailKey);
   localStorage.removeItem('shift-app-username');  // ensure consistent key name
 
-  this.snack.open(`✅ Logged out successfully. Goodbye, ${'shift-app-usernam'}!`, 'OK', { duration: 3000 });
+  this.snack.open(`✅ Logged out successfully. Goodbye, ${this.getUsername()}!`, 'OK', { duration: 3000 });
   this.router.navigate(['/login']);
 }
   getToken(): string | null { return localStorage.getItem(this.tokenKey); }
