@@ -61,9 +61,10 @@ logout(): void {
   localStorage.removeItem(this.roleKey);
   localStorage.removeItem(this.userIdKey);
   localStorage.removeItem(this.emailKey);
-  localStorage.removeItem('shift-app-username');  // ensure consistent key name
-
+ 
   this.snack.open(`✅ Logged out successfully. Goodbye, ${this.getUsername()}!`, 'OK', { duration: 3000 });
+   localStorage.removeItem('shift-app-username');  // ensure consistent key name
+
   this.router.navigate(['/login']);
 }
   getToken(): string | null { return localStorage.getItem(this.tokenKey); }
