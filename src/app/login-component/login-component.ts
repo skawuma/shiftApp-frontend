@@ -51,7 +51,6 @@ import { MatIcon } from '@angular/material/icon';
           </mat-form-field>
 
           <div class="actions">
-            <button mat-stroked-button type="button" (click)="fillDemo()">Demo</button>
             <button mat-flat-button color="primary" type="submit" [disabled]="form.invalid || loading">
               {{ loading ? 'Signing in...' : 'Sign in' }}
             </button>
@@ -71,7 +70,7 @@ import { MatIcon } from '@angular/material/icon';
     .login-card { width: 380px; padding: 24px; }
     .login-form { display:flex; flex-direction:column; gap:12px; }
     .full { width:100%; }
-    .actions { display:flex; justify-content:space-between; align-items:center; margin-top:8px; }
+    .actions { display:flex; justify-content:flex-end; align-items:center; margin-top:8px; }
     .register-link { text-align:center; margin-top:16px; font-size:14px; }
     .register-link a {  color: #1976d2;
   cursor: pointer;
@@ -99,10 +98,6 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  fillDemo() {
-    this.form.setValue({ username: 'admin', password: 'admin123' });
-  }
-
   onSubmit() {
     if (this.form.invalid) return;
     this.loading = true;
@@ -114,7 +109,6 @@ export class LoginComponent implements OnInit {
         const role = res.role ?? this.auth.getRole();
         if (role === 'ROLE_ADMIN') this.router.navigate(['/admin']);
         else this.router.navigate(['/dashboard']);
-        console.log(res);
       },
       error: (err) => {
         this.loading = false;

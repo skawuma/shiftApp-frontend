@@ -16,8 +16,6 @@ import { MatNativeDateModule } from '@angular/material/core';
 import { trigger, state, style, transition, animate } from '@angular/animations';
 import { RequestService } from '../servicves/request.service';
 import { AdminActionDialog } from '../admin-action-dialog/admin-action-dialog';
-import * as XLSX from 'xlsx';
-import { saveAs } from 'file-saver';
 import { SelectionModel } from '@angular/cdk/collections';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { ExportConfirmDialogComponent } from '../shared/export-confirm-dialog-component/export-confirm-dialog-component';
@@ -40,10 +38,9 @@ import { ExportConfirmDialogComponent } from '../shared/export-confirm-dialog-co
     ReactiveFormsModule,
     MatDatepickerModule,
     MatNativeDateModule,
-    ExportConfirmDialogComponent,
     FormsModule,
     MatCheckboxModule
-],
+	],
   animations: [
     trigger('rowFade', [
       state('visible', style({ opacity: 1, transform: 'scale(1)' })),
@@ -433,20 +430,27 @@ private generateCSV(dataToExport: any[]) {
   const username = localStorage.getItem('shift-app-username') || 'admin';
   const filename = `shift_requests_${username}_${this.getTimestamp()}.csv`;
 
-  saveAs(blob, filename);
+  this.downloadBlob(blob, filename);
   this.snackbar.open(`CSV exported (${dataToExport.length} rows)`, 'OK', { duration: 2000 });
 }
 
 
 private generateExcel(dataToExport: any[]) {
-  const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-  const workbook = XLSX.utils.book_new();
-  XLSX.utils.book_append_sheet(workbook, worksheet, 'Shift Requests');
-
+  const columns = Object.keys(dataToExport[0]);
+  const header = columns
+    .map(column => `<th>${this.escapeHtml(column)}</th>`)
+    .join('');
+  const rows = dataToExport
+    .map(row => `<tr>${columns
+      .map(column => `<td>${this.escapeHtml(this.normalizeExportValue(row[column]))}</td>`)
+      .join('')}</tr>`)
+    .join('');
+  const html = `<!doctype html><html><head><meta charset="utf-8"></head><body><table><thead><tr>${header}</tr></thead><tbody>${rows}</tbody></table></body></html>`;
+  const blob = new Blob([html], { type: 'application/vnd.ms-excel;charset=utf-8;' });
   const username = localStorage.getItem('shift-app-username') || 'admin';
-  const filename = `shift_requests_${username}_${this.getTimestamp()}.xlsx`;
+  const filename = `shift_requests_${username}_${this.getTimestamp()}.xls`;
   
-  XLSX.writeFile(workbook, filename);
+  this.downloadBlob(blob, filename);
   this.snackbar.open(`Excel exported (${dataToExport.length} rows)`, 'OK', { duration: 2000 });
 }
 
@@ -473,6 +477,30 @@ exportToExcel() {
   } else {
     this.generateExcel(this.filteredRequests);
   }
+  }
+
+private normalizeExportValue(value: any): string {
+  if (Array.isArray(value)) return value.join(', ');
+  if (value === null || value === undefined) return '';
+  return String(value);
+}
+
+private escapeHtml(value: string): string {
+  return value
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;')
+    .replace(/'/g, '&#39;');
+}
+
+private downloadBlob(blob: Blob, filename: string) {
+  const url = URL.createObjectURL(blob);
+  const anchor = document.createElement('a');
+  anchor.href = url;
+  anchor.download = filename;
+  anchor.click();
+  URL.revokeObjectURL(url);
 }
 
 }

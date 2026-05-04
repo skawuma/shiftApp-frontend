@@ -23,14 +23,10 @@ export class RequestService {
 
   // 🧾 Submit a new shift request (employee)
   submitRequest(data: any): Observable<any> {
-    const userId = Number(localStorage.getItem('shift-app-userId'));
     const payload = {
-      userId,
       requestedDates: data.requestedDates, // expects ['2025-10-20', '2025-10-21', ...]
       shift: data.shift
     };
-
-    console.log('Submitting shift request:', payload);
 
     return this.http.post(`${this.apiUrl}`, payload, {
       headers: this.getAuthHeaders()
@@ -39,12 +35,8 @@ export class RequestService {
 
   // 👤 Fetch requests for the logged-in employee
   getRequestsByUser(): Observable<any> {
-    const userId = Number(localStorage.getItem('shift-app-userId'));
-    const params = new HttpParams().set('userId', String(userId));
-
     return this.http.get(`${this.apiUrl}/user`, {
-      headers: this.getAuthHeaders(),
-      params
+      headers: this.getAuthHeaders()
     });
   }
 

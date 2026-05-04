@@ -230,7 +230,6 @@ export class EmployeeDashboardComponent implements OnInit {
     this.loading = true;
 
     const payload = {
-      userId: 1, // replace with logged-in user id
       requestedDates: this.selectedDates.map(d => this.formatDate(d)),
       shift: this.shiftForm.value.shift
     };
