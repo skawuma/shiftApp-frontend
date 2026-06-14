@@ -28,7 +28,4 @@ COPY --from=build /app/dist/shiftApp-frontend/browser/ /usr/share/nginx/html/
 # Copy nginx config
 COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# ACME folder for certbot challenges
-RUN mkdir -p /var/www/certbot
-
-EXPOSE 80 443
+EXPOSE 80
