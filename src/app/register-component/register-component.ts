@@ -43,7 +43,7 @@ import { Router } from '@angular/router';
           <mat-label>Password</mat-label>
           <input matInput type="password" formControlName="password" />
           <mat-error *ngIf="form.controls['password'].hasError('required')">Password is required</mat-error>
-          <mat-error *ngIf="form.controls['password'].hasError('minlength')">Minimum 6 characters</mat-error>
+          <mat-error *ngIf="form.controls['password'].hasError('minlength')">Minimum 10 characters</mat-error>
         </mat-form-field>
 
         <div class="actions">
@@ -77,7 +77,7 @@ export class RegisterComponent {
     this.form = this.fb.group({
       username: ['', Validators.required],
       email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]]
+      password: ['', [Validators.required, Validators.minLength(10)]]
     });
   }
 

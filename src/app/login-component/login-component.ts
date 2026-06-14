@@ -62,6 +62,7 @@ import { MatIcon } from '@angular/material/icon';
           <a (click)="openRegisterDialog()">
              <mat-icon inline>person_add</mat-icon>Register one here</a>
         </p>
+        <p class="register-link"><a routerLink="/forgot-password">Forgot password?</a></p>
       </mat-card>
     </div>
   `,

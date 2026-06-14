@@ -82,4 +82,12 @@ logout(): void {
    register(data: { username: string; email: string; password: string }) {
   return this.http.post(`${this.base}/register`, data);
    }
+
+  forgotPassword(identifier: string) {
+    return this.http.post(`${this.base}/forgot-password`, { identifier });
+  }
+
+  resetPassword(token: string, password: string) {
+    return this.http.post(`${this.base}/reset-password`, { token, password });
+  }
 }
