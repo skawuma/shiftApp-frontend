@@ -1,6 +1,6 @@
 export const environment = {
   production: true,
 
- apiUrl: 'https://schedule.samuelkawuma.com/api'
+  apiUrl: 'https://api-schedule.samuelkawuma.com/api'
 
 };

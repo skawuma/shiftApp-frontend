@@ -9,23 +9,23 @@ RUN npm ci
 # Copy source
 COPY . .
 
-# Inject backend API URL
-ARG DOMAIN=https://schedule.samuelkawuma.com
-RUN sed -i "s#apiUrl: 'http://.*:8080/api'#apiUrl: '${DOMAIN}/api'#" src/app/environments/environment.prod.ts || true
+# Inject backend API URL for the production build.
+ARG API_URL=https://api-schedule.samuelkawuma.com/api
+RUN sed -i "s#apiUrl: '.*'#apiUrl: '${API_URL}'#" src/app/environments/environment.ts
 
 # Build using Vite (Angular builder output goes to dist/shiftApp-frontend/browser)
 RUN npm run build
 
-# ====== Stage 2: Nginx Runtime ======
-FROM nginx:1.27-alpine
+# ====== Stage 2: Caddy Runtime ======
+FROM caddy:2-alpine
 
-# Remove default nginx HTML
-RUN rm -rf /usr/share/nginx/html/*
+# Remove default Caddy site
+RUN rm -rf /usr/share/caddy/*
 
-# ✅ Copy the correct build output
-COPY --from=build /app/dist/shiftApp-frontend/browser/ /usr/share/nginx/html/
+# Copy the Angular browser build output
+COPY --from=build /app/dist/shiftApp-frontend/browser/ /usr/share/caddy/
 
-# Copy nginx config
-COPY nginx.conf /etc/nginx/conf.d/default.conf
+# Copy Caddy config
+COPY Caddyfile /etc/caddy/Caddyfile
 
 EXPOSE 80

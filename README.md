@@ -126,9 +126,9 @@ flowchart LR
 
 ```mermaid
 flowchart TB
-    U[Browser] --> F[Angular Frontend]
-    F --> N[Nginx Frontend Container]
-    N --> API[Spring Boot Backend API]
+    U[Browser] --> C[Public Caddy Reverse Proxy]
+    C --> N[Caddy Frontend Container]
+    C --> API[Spring Boot Backend API]
     API --> SEC[Spring Security and JWT]
     API --> DB[(PostgreSQL)]
     API --> MAIL[Titan SMTP Email]
@@ -147,7 +147,7 @@ shiftRequest_App/
 |  `- shiftApp-frontend/
 |     |- README.md
 |     |- Dockerfile
-|     |- nginx.conf
+|     |- Caddyfile
 |     `- src/app/...
 `- shiftApp_Backend/
    `- Shift-App/
@@ -182,11 +182,12 @@ Public repositories:
 
 ### Infrastructure
 
-- Dockerfile for Angular build and Nginx hosting
+- Dockerfile for Angular build and Caddy hosting
 - Dockerfile for Spring Boot packaging and runtime
 - GitHub push triggers the VPS webhook
 - webhook rebuilds and restarts Docker containers on the VPS
-- production app is served under `schedule.samuelkawuma.com`
+- production frontend is served under `schedule.samuelkawuma.com`
+- production API is served under `api-schedule.samuelkawuma.com`
 
 ## Shift Request Lifecycle
 
@@ -388,8 +389,13 @@ The local API base URL is configured in:
 
 - `src/app/environments/environment.ts`
 
-The production Dockerfile can inject the deployed domain into the Angular build so
-API calls target the deployed backend path.
+The production Dockerfile can inject the deployed API URL into the Angular build:
+
+```bash
+docker build \
+  --build-arg API_URL=https://api-schedule.samuelkawuma.com/api \
+  -t shift-frontend .
+```
 
 ## Documentation Map
 
